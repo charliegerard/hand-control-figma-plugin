@@ -1,0 +1,33 @@
+<h2>Rectangle Creator</h2>
+<p>Count: <input id="count" value="5" /></p>
+<button id="create">Create</button>
+<button id="cancel">Cancel</button>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.4.1/socket.io.js"></script>
+<script>
+  var socket = io("ws://localhost:8080", { transports: ["websocket"] });
+</script>
+
+<script>
+  document.getElementById("create").onclick = () => {
+    const textbox = document.getElementById("count");
+    const count = parseInt(textbox.value, 10);
+    parent.postMessage(
+      { pluginMessage: { type: "create-rectangles", count } },
+      "*"
+    );
+  };
+
+  socket.on("ui-movement", (msg) => {
+    // console.log("IN FIGMA", msg);
+
+    parent.postMessage(
+      { pluginMessage: { type: "move-rectangle-x", msg } },
+      "*"
+    );
+  });
+
+  document.getElementById("cancel").onclick = () => {
+    parent.postMessage({ pluginMessage: { type: "cancel" } }, "*");
+  };
+</script>
