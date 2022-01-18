@@ -1,47 +1,26 @@
-<h2>Rectangle Creator</h2>
-<p>Count: <input id="count" value="5" /></p>
-<button id="create">Create</button>
-<button id="cancel">Cancel</button>
-
 <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.4.1/socket.io.js"></script>
 <script>
   var socket = io("ws://localhost:8080", { transports: ["websocket"] });
 </script>
 
 <script>
-  document.getElementById("create").onclick = () => {
-    const textbox = document.getElementById("count");
-    const count = parseInt(textbox.value, 10);
-    parent.postMessage(
-      { pluginMessage: { type: "create-rectangles", count } },
-      "*"
-    );
-  };
-
-  socket.on("right-pinch", (msg) => {
-    parent.postMessage(
-      { pluginMessage: { type: "resize-rectangle-y", msg } },
-      "*"
-    );
-  });
-
+  // Re-center the elements on the viewport
   socket.on("pan", (msg) => {
     parent.postMessage({ pluginMessage: { type: "pan", msg } }, "*");
   });
 
+  // Track when start creating an element
   socket.on("event", (msg) => {
     parent.postMessage({ pluginMessage: { type: "event", msg } }, "*");
   });
 
+  // Zoom zoom
   socket.on("zoom", (msg) => {
     parent.postMessage({ pluginMessage: { type: "zoom", msg } }, "*");
   });
 
+  // Create an element
   socket.on("create-rect", (msg) => {
     parent.postMessage({ pluginMessage: { type: "create-rect", msg } }, "*");
   });
-
-  document.getElementById("cancel").onclick = () => {
-    parent.postMessage({ pluginMessage: { type: "cancel" } }, "*");
-  };
 </script>

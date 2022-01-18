@@ -1,12 +1,12 @@
 {
-  "name": "first-plugin",
+  "name": "figma-plugin-hand-control",
   "version": "1.0.0",
-  "description": "Your Figma plugin",
+  "description": "Prototype of Figma plugin to create UIs with hand movements",
   "main": "code.js",
+  "author": "Charlie Gerard",
   "scripts": {
     "build": "tsc -p tsconfig.json"
   },
-  "author": "",
   "license": "",
   "devDependencies": {
     "@figma/plugin-typings": "^1.41.1"
