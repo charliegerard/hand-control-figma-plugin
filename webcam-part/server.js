@@ -10,9 +10,6 @@ app.use("/", express.static("public"));
 io.on("connection", (socket) => {
   console.log("a user connected");
 
-  // socket.on("movement", (e) => {
-  //   io.emit("ui-movement", e);
-  // });
   socket.on("right_pinch", (e) => {
     io.emit("right-pinch", e);
   });
@@ -24,8 +21,13 @@ io.on("connection", (socket) => {
   socket.on("pan", (e) => {
     io.emit("pan", e);
   });
+
   socket.on("zoom", (e) => {
     io.emit("zoom", e);
+  });
+
+  socket.on("event", (e) => {
+    io.emit("event", e);
   });
 });
 

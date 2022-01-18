@@ -25,6 +25,8 @@ let leftPinch,
 let palmLeft,
   palmRight = false;
 
+let previousEvent;
+
 async function createDetector() {
   switch (STATE.model) {
     case handdetection.SupportedModels.MediaPipeHands:
@@ -206,10 +208,6 @@ async function renderResult() {
           leftRingFingerTip.y < leftRingFingerDip.y
         ) {
           palmLeft = true;
-          // socket.emit("pan", {
-          //   x: leftMiddleFingerDip.x,
-          //   y: leftMiddleFingerDip.y,
-          // });
         } else {
           palmLeft = false;
         }
@@ -251,10 +249,6 @@ async function renderResult() {
           rightRingFingerTip.y < rightRingFingerDip.y
         ) {
           palmRight = true;
-          // socket.emit("pan", {
-          //   x: rightMiddleFingerDip.x,
-          //   y: rightMiddleFingerDip.y,
-          // });
         } else {
           palmRight = false;
         }
@@ -268,16 +262,29 @@ async function renderResult() {
           // zoom
 
           socket.emit("zoom", rightMiddleFingerTip.x - leftMiddleFingerTip.x);
+        } else if (palmRight || palmLeft) {
+          socket.emit("pan", {
+            x: rightMiddleFingerDip.x,
+            y: rightMiddleFingerDip.y,
+          });
         }
       }
 
+      // Create shape pinch
       if (leftPinch && rightPinch && leftThumbTip && rightThumbTip) {
+        if (!previousEvent || previousEvent === "end-pinch") {
+          previousEvent = "start-pinch";
+          socket.emit("event", "start-pinch");
+        }
         socket.emit("create_rect", {
-          topX: leftThumbTip.x,
-          topY: leftThumbTip.y,
+          topX: leftThumbTip.x * 5,
+          topY: leftThumbTip.y * 5,
           width: rightThumbTip.x - leftThumbTip.x,
           height: rightThumbTip.y - leftThumbTip.y,
         });
+      } else if (!leftPinch && !rightPinch) {
+        previousEvent = "end-pinch";
+        socket.emit("event", "end-pinch");
       }
     });
 
