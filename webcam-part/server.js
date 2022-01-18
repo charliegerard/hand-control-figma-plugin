@@ -10,10 +10,6 @@ app.use("/", express.static("public"));
 io.on("connection", (socket) => {
   console.log("a user connected");
 
-  socket.on("right_pinch", (e) => {
-    io.emit("right-pinch", e);
-  });
-
   socket.on("create_rect", (e) => {
     io.emit("create-rect", e);
   });
@@ -32,5 +28,5 @@ io.on("connection", (socket) => {
 });
 
 server.listen(8080, () => {
-  console.log("listening on *:3000");
+  console.log("listening on *:8080");
 });

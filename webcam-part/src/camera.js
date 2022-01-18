@@ -16,47 +16,6 @@
  */
 
 import * as params from "./shared/params";
-import { isMobile } from "./shared/util";
-
-// These anchor points allow the hand pointcloud to resize according to its
-// position in the input.
-const ANCHOR_POINTS = [
-  [0, 0, 0],
-  [0, 0.1, 0],
-  [-0.1, 0, 0],
-  [-0.1, -0.1, 0],
-];
-
-const fingerLookupIndices = {
-  thumb: [0, 1, 2, 3, 4],
-  indexFinger: [0, 5, 6, 7, 8],
-  middleFinger: [0, 9, 10, 11, 12],
-  ringFinger: [0, 13, 14, 15, 16],
-  pinky: [0, 17, 18, 19, 20],
-}; // for rendering each finger as a polyline
-
-const connections = [
-  [0, 1],
-  [1, 2],
-  [2, 3],
-  [3, 4],
-  [0, 5],
-  [5, 6],
-  [6, 7],
-  [7, 8],
-  [0, 9],
-  [9, 10],
-  [10, 11],
-  [11, 12],
-  [0, 13],
-  [13, 14],
-  [14, 15],
-  [15, 16],
-  [0, 17],
-  [17, 18],
-  [18, 19],
-  [19, 20],
-];
 
 export class Camera {
   constructor() {
@@ -113,27 +72,12 @@ export class Camera {
 
     camera.canvas.width = videoWidth;
     camera.canvas.height = videoHeight;
-    // const canvasContainer = document.querySelector(".canvas-wrapper");
-    // canvasContainer.style = `width: ${videoWidth}px; height: ${videoHeight}px`;
 
-    // canvasContainer.width = window.innerWidth;
-    // canvasContainer.height = window.innerHeight;
-    // Because the image from camera is mirrored, need to flip horizontally.
     camera.ctx.translate(camera.video.videoWidth, 0);
     camera.ctx.scale(-1, 1);
 
     return camera;
   }
-
-  // drawCtx() {
-  //   this.ctx.drawImage(
-  //     this.video,
-  //     0,
-  //     0,
-  //     this.video.videoWidth,
-  //     this.video.videoHeight
-  //   );
-  // }
 
   clearCtx() {
     this.ctx.clearRect(0, 0, this.video.videoWidth, this.video.videoHeight);

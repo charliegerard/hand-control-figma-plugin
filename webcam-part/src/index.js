@@ -95,10 +95,7 @@ function endEstimateHandsStats() {
     const averageInferenceTime = inferenceTimeSum / numInferences;
     inferenceTimeSum = 0;
     numInferences = 0;
-    // stats.customFpsPanel.update(
-    //   1000.0 / averageInferenceTime,
-    //   120 /* maxValue */
-    // );
+
     lastPanelUpdate = endInferenceTime;
   }
 }
@@ -134,8 +131,6 @@ async function renderResult() {
     endEstimateHandsStats();
   }
 
-  // camera.drawCtx();
-
   // The null check makes sure the UI is not in the middle of changing to a
   // different model. If during model change, the result is from an old model,
   // which shouldn't be rendered.
@@ -161,12 +156,6 @@ async function renderResult() {
       leftRingFingerDip,
       rightRingFingerTip;
     hands.map((hand) => {
-      // const thumbTip = hand.keypoints.find((p) => p.name === "thumb_tip");
-      // // console.log(thumbTip.y);
-      // const indexTip = hand.keypoints.find(
-      //   (p) => p.name === "index_finger_tip"
-      // );
-
       if (hand.handedness === "Left") {
         // -------------
         // DETECT PINCH
@@ -179,6 +168,7 @@ async function renderResult() {
         if (leftThumbTip.y - leftIndexTip.y < 15) {
           leftPinch = true;
           // socket.emit("left_pinch", { msg: "left pinch" });
+          console.log("LEFT PINCH");
         } else {
           leftPinch = false;
         }
@@ -287,8 +277,6 @@ async function renderResult() {
         socket.emit("event", "end-pinch");
       }
     });
-
-    // camera.drawResults(hands);
   }
 }
 
@@ -309,10 +297,6 @@ async function app() {
     alert("Cannot find model in the query string.");
     return;
   }
-
-  // await setupDatGui(urlParams);
-
-  // stats = setupStats();
 
   camera = await Camera.setupCamera(STATE.camera);
 

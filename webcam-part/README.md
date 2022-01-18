@@ -1,25 +1,26 @@
-How to run
+# Hand detection using MediaPipe's handpose ML model
 
-After the firs time:
+## How to run
+
+After the first time:
 `rm -rf .cache dist node_modules`
 
-1st time:
+### 1st time:
 
-`yarn build-dep`
+1. `yarn build-dep`
 
-`yarn`
+2. `yarn`
 
-`yarn watch`
+3. `yarn watch`
 
-also run `node server.js`
+At the same time in another terminal window, run the server side to start the websocket server:
 
-`localhost:1234/?model=mediapipe_hands`
+`node server.js`
 
+And open a browser window at `localhost:1234/?model=mediapipe_hands`.
 
-## Commands
+## Available commands
 
-Pinch left
-Pinch right
-Pinch left + pinch right = make rectangle
-Palm left / right = move canvas
+Pinch left + pinch right = Make element visible
+Palm left / right = Refocus viewport
 Palm left + Palm right = zoom
