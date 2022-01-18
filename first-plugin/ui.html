@@ -18,13 +18,32 @@
     );
   };
 
-  socket.on("ui-movement", (msg) => {
-    // console.log("IN FIGMA", msg);
+  // socket.on("ui-movement", (msg) => {
+  //   // console.log("IN FIGMA", msg);
 
+  //   parent.postMessage(
+  //     { pluginMessage: { type: "move-rectangle-x", msg } },
+  //     "*"
+  //   );
+  // });
+
+  socket.on("right-pinch", (msg) => {
     parent.postMessage(
-      { pluginMessage: { type: "move-rectangle-x", msg } },
+      { pluginMessage: { type: "resize-rectangle-y", msg } },
       "*"
     );
+  });
+
+  socket.on("pan", (msg) => {
+    parent.postMessage({ pluginMessage: { type: "pan", msg } }, "*");
+  });
+
+  socket.on("zoom", (msg) => {
+    parent.postMessage({ pluginMessage: { type: "zoom", msg } }, "*");
+  });
+
+  socket.on("create-rect", (msg) => {
+    parent.postMessage({ pluginMessage: { type: "create-rect", msg } }, "*");
   });
 
   document.getElementById("cancel").onclick = () => {

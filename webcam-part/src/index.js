@@ -9,9 +9,7 @@ tfjsWasm.setWasmPaths(
 import * as handdetection from "@tensorflow-models/hand-pose-detection";
 
 import { Camera } from "./camera";
-// import { setupDatGui } from "./option_panel";
 import { STATE } from "./shared/params";
-// import { setupStats } from "./shared/stats_panel";
 import { setBackendAndEnvFlags } from "./shared/util";
 
 let detector, camera, stats;
@@ -22,6 +20,10 @@ let inferenceTimeSum = 0,
 let rafId;
 
 let twoHands = false;
+let leftPinch,
+  rightPinch = false;
+let palmLeft,
+  palmRight = false;
 
 async function createDetector() {
   switch (STATE.model) {
@@ -130,42 +132,156 @@ async function renderResult() {
     endEstimateHandsStats();
   }
 
-  camera.drawCtx();
+  // camera.drawCtx();
 
   // The null check makes sure the UI is not in the middle of changing to a
   // different model. If during model change, the result is from an old model,
   // which shouldn't be rendered.
   if (hands && hands.length > 0 && !STATE.isModelChanged) {
-    // console.log(hands[0].handedness);
     if (hands.length > 1) {
       twoHands = true;
     } else {
       twoHands = false;
     }
-    // console.log(hands[0]);
 
+    let leftThumbTip,
+      rightThumbTip,
+      leftIndexTip,
+      rightIndexTip,
+      leftIndexFingerDip,
+      rightIndexFingerDip,
+      rightMiddleFingerDip,
+      rightRingFingerDip,
+      rightMiddleFingerTip,
+      leftMiddleFingerTip,
+      leftMiddleFingerDip,
+      leftRingFingerTip,
+      leftRingFingerDip,
+      rightRingFingerTip;
     hands.map((hand) => {
-      const thumbTip = hand.keypoints.find((p) => p.name === "thumb_tip");
-      // console.log(thumbTip.y);
-      const indexTip = hand.keypoints.find(
-        (p) => p.name === "index_finger_tip"
-      );
+      // const thumbTip = hand.keypoints.find((p) => p.name === "thumb_tip");
+      // // console.log(thumbTip.y);
+      // const indexTip = hand.keypoints.find(
+      //   (p) => p.name === "index_finger_tip"
+      // );
+
       if (hand.handedness === "Left") {
-        if (thumbTip.y - indexTip.y < 15) {
-          console.log("LEFT PINCH");
-          //  socket.emit("movement", { x: nose.x, y: nose.y });
+        // -------------
+        // DETECT PINCH
+        // -------------
+        leftThumbTip = hand.keypoints.find((p) => p.name === "thumb_tip");
+        leftIndexTip = hand.keypoints.find(
+          (p) => p.name === "index_finger_tip"
+        );
+
+        if (leftThumbTip.y - leftIndexTip.y < 15) {
+          leftPinch = true;
+          // socket.emit("left_pinch", { msg: "left pinch" });
+        } else {
+          leftPinch = false;
+        }
+
+        //---------------
+        // DETECT PALM
+        //---------------
+        leftMiddleFingerTip = hand.keypoints.find(
+          (p) => p.name === "middle_finger_tip"
+        );
+        leftRingFingerTip = hand.keypoints.find(
+          (p) => p.name === "ring_finger_tip"
+        );
+        leftIndexFingerDip = hand.keypoints.find(
+          (p) => p.name === "index_finger_dip"
+        );
+        leftMiddleFingerDip = hand.keypoints.find(
+          (p) => p.name === "middle_finger_dip"
+        );
+        leftRingFingerDip = hand.keypoints.find(
+          (p) => p.name === "ring_finger_dip"
+        );
+
+        if (
+          leftIndexTip.y < leftIndexFingerDip.y &&
+          leftMiddleFingerTip.y < leftMiddleFingerDip.y &&
+          leftRingFingerTip.y < leftRingFingerDip.y
+        ) {
+          palmLeft = true;
+          // socket.emit("pan", {
+          //   x: leftMiddleFingerDip.x,
+          //   y: leftMiddleFingerDip.y,
+          // });
+        } else {
+          palmLeft = false;
         }
       } else {
-        if (thumbTip.y - indexTip.y < 15) {
-          console.log("RIGHT PINCH");
+        // -------------
+        // DETECT PINCH
+        // -------------
+        rightThumbTip = hand.keypoints.find((p) => p.name === "thumb_tip");
+        rightIndexTip = hand.keypoints.find(
+          (p) => p.name === "index_finger_tip"
+        );
+        if (rightThumbTip.y - rightIndexTip.y < 15) {
+          rightPinch = true;
+        } else {
+          rightPinch = false;
+        }
+        //---------------
+        // DETECT PALM
+        //---------------
+        rightMiddleFingerTip = hand.keypoints.find(
+          (p) => p.name === "middle_finger_tip"
+        );
+        rightRingFingerTip = hand.keypoints.find(
+          (p) => p.name === "ring_finger_tip"
+        );
+        rightIndexFingerDip = hand.keypoints.find(
+          (p) => p.name === "index_finger_dip"
+        );
+        rightMiddleFingerDip = hand.keypoints.find(
+          (p) => p.name === "middle_finger_dip"
+        );
+        rightRingFingerDip = hand.keypoints.find(
+          (p) => p.name === "ring_finger_dip"
+        );
+
+        if (
+          rightIndexTip.y < rightIndexFingerDip.y &&
+          rightMiddleFingerTip.y < rightMiddleFingerDip.y &&
+          rightRingFingerTip.y < rightRingFingerDip.y
+        ) {
+          palmRight = true;
+          // socket.emit("pan", {
+          //   x: rightMiddleFingerDip.x,
+          //   y: rightMiddleFingerDip.y,
+          // });
+        } else {
+          palmRight = false;
+        }
+
+        if (
+          palmRight &&
+          palmLeft &&
+          rightMiddleFingerTip &&
+          leftMiddleFingerTip
+        ) {
+          // zoom
+
+          socket.emit("zoom", rightMiddleFingerTip.x - leftMiddleFingerTip.x);
         }
       }
+
+      if (leftPinch && rightPinch && leftThumbTip && rightThumbTip) {
+        socket.emit("create_rect", {
+          topX: leftThumbTip.x,
+          topY: leftThumbTip.y,
+          width: rightThumbTip.x - leftThumbTip.x,
+          height: rightThumbTip.y - leftThumbTip.y,
+        });
+      }
     });
-    /*
-     
-     - If the y coordinate of index is lower than y coordinate of thumb = pinch 
-    */
-    camera.drawResults(hands);
+
+    // camera.drawResults(hands);
   }
 }
 

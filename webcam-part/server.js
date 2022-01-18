@@ -7,17 +7,25 @@ const io = new Server(server);
 
 app.use("/", express.static("public"));
 
-// app.get("/", (req, res) => {
-//   res.setHeader("Access-Control-Allow-Origin", "https://www.figma.com");
-//   res.sendFile(__dirname + "/index.html");
-// });
-
 io.on("connection", (socket) => {
   console.log("a user connected");
 
-  socket.on("movement", (e) => {
-    // console.log("ui-movement", e);
-    io.emit("ui-movement", e);
+  // socket.on("movement", (e) => {
+  //   io.emit("ui-movement", e);
+  // });
+  socket.on("right_pinch", (e) => {
+    io.emit("right-pinch", e);
+  });
+
+  socket.on("create_rect", (e) => {
+    io.emit("create-rect", e);
+  });
+
+  socket.on("pan", (e) => {
+    io.emit("pan", e);
+  });
+  socket.on("zoom", (e) => {
+    io.emit("zoom", e);
   });
 });
 

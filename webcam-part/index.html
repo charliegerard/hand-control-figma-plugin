@@ -6,30 +6,33 @@
       name="viewport"
       content="width=device-width,initial-scale=1,maximum-scale=1.0, user-scalable=no"
     />
+    <style>
+      video {
+        width: 100%;
+        height: 100%;
+      }
+      canvas {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+      }
+    </style>
   </head>
   <script src="http://localhost:8080/socket.io/socket.io.js"></script>
   <script>
     var socket = io("ws://localhost:8080", { transports: ["websocket"] });
   </script>
+
   <body>
-    <div id="stats"></div>
     <div id="main">
-      <div class="container">
-        <div class="canvas-wrapper">
-          <canvas id="output"></canvas>
-          <video
-            id="video"
-            playsinline
-            style="
-              -webkit-transform: scaleX(-1);
-              transform: scaleX(-1);
-              visibility: hidden;
-              width: auto;
-              height: auto;
-            "
-          ></video>
-        </div>
-      </div>
+      <canvas id="output"></canvas>
+      <video
+        id="video"
+        playsinline
+        style="-webkit-transform: scaleX(-1); transform: scaleX(-1)"
+      ></video>
     </div>
   </body>
   <script src="src/index.js"></script>
