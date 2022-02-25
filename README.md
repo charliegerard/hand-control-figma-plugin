@@ -4,6 +4,8 @@ This project uses TensorFlow.js' handpose detection model to add motion control 
 
 Figma plugins don't allow access to the webcam for security reasons so the hands detection is done in a separate web app and the data is sent to the Figma plugin using websockets.
 
+[![](https://www.youtube.com/watch?v=AzV2ngmbiBw)](https://www.youtube.com/watch?v=AzV2ngmbiBw)
+
 ## How to run
 
 **For the hand detection:**
